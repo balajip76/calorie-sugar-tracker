@@ -50,8 +50,8 @@ development_status:
   # Epic 2: Core Entry & Daily Total
   epic-2: in-progress
   2-1-storage-service-data-model: done
-  2-2-entries-context-calculations-engine: backlog
-  2-3-main-screen-layout-statcards-date-row: backlog
+  2-2-entries-context-calculations-engine: done
+  2-3-main-screen-layout-statcards-date-row: done
   2-4-entry-sheet-logging-flow: backlog
   2-5-entry-history-list: backlog
   2-6-fab-error-handling: backlog
