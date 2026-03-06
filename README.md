@@ -2,6 +2,8 @@
 
 A radically minimal single-screen web app for tracking daily calorie and sugar intake. No accounts, no food database, no setup -- just two numbers and a tap.
 
+**Live:** https://calorie-sugar-tracker.vercel.app
+
 ## Setup
 
 ```bash
