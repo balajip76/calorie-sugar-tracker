@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>calorie-sugar-tracker - Design Direction Mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #1a1a1a;
+    color: #eee;
+    min-height: 100vh;
+  }
+
+  /* --- Navigation --- */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(26,26,26,0.95); backdrop-filter: blur(12px);
+    border-bottom: 1px solid #333;
+    padding: 12px 24px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .nav h1 { font-size: 14px; font-weight: 600; color: #C4856C; white-space: nowrap; }
+  .nav-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .nav-pill {
+    padding: 6px 14px; border-radius: 9999px; border: 1px solid #444;
+    background: transparent; color: #aaa; font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; font-family: inherit;
+  }
+  .nav-pill:hover { border-color: #888; color: #eee; }
+  .nav-pill.active { background: #C4856C; border-color: #C4856C; color: #fff; }
+
+  /* --- Mockup Container --- */
+  .mockups { padding: 80px 24px 48px; max-width: 1400px; margin: 0 auto; }
+  .mockup-section {
+    display: none; animation: fadeIn 0.3s ease;
+  }
+  .mockup-section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-header {
+    margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid #333;
+  }
+  .section-header h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+  .section-header p { font-size: 14px; color: #888; line-height: 1.6; max-width: 600px; }
+
+  .mockup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(375px, 1fr));
+    gap: 32px;
+    justify-items: center;
+  }
+
+  /* --- Phone Frame --- */
+  .phone-frame {
+    width: 375px; height: 812px;
+    border-radius: 40px;
+    border: 3px solid #444;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .phone-frame:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 28px 80px rgba(0,0,0,0.5);
+  }
+  .phone-label {
+    text-align: center; margin-top: 16px; font-size: 13px; font-weight: 600; color: #999;
+  }
+  .phone-sublabel {
+    text-align: center; margin-top: 4px; font-size: 11px; color: #666; max-width: 375px; margin-left: auto; margin-right: auto;
+  }
+
+  /* --- Shared App Tokens --- */
+  :root {
+    --cream: #FAF7F2;
+    --linen: #F3EDE4;
+    --sand: #E8DFD3;
+    --espresso: #3D3229;
+    --stone: #8C7E6F;
+    --tan: #B5A898;
+    --terra: #C4856C;
+    --terra-deep: #A96E57;
+    --blush: #F0DDD6;
+    --amber: #D4A574;
+  }
+
+  /* --- App Screen Base --- */
+  .app-screen {
+    width: 100%; height: 100%;
+    background: var(--cream);
+    display: flex; flex-direction: column;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--espresso);
+    overflow: hidden;
+  }
+
+  /* --- Status Bar --- */
+  .status-bar {
+    height: 44px; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; font-weight: 600; color: var(--stone);
+  }
+
+  /* ========================================
+     DIRECTION A: Centered Hero
+     ======================================== */
+  .dir-a .hero {
+    flex: 0 0 auto; padding: 24px 24px 20px; text-align: center;
+  }
+  .dir-a .hero-label {
+    font-size: 12px; font-weight: 600; color: var(--stone);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+  }
+  .dir-a .hero-total {
+    font-size: 48px; font-weight: 700; color: var(--espresso);
+    line-height: 1.1; cursor: pointer; transition: color 0.2s;
+  }
+  .dir-a .hero-total:hover { color: var(--terra); }
+  .dir-a .hero-total .unit { font-size: 20px; font-weight: 500; color: var(--stone); }
+  .dir-a .hero-sugar {
+    font-size: 28px; font-weight: 600; color: var(--stone); margin-top: 4px;
+  }
+  .dir-a .hero-sugar .unit { font-size: 16px; font-weight: 500; }
+  .dir-a .hero-hint {
+    font-size: 11px; color: var(--tan); margin-top: 8px;
+  }
+  .dir-a .streak-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 12px; font-size: 13px; font-weight: 500; color: var(--amber);
+  }
+  .dir-a .section-divider {
+    height: 1px; background: var(--sand); margin: 0 24px;
+  }
+  .dir-a .entries-area {
+    flex: 1; overflow-y: auto; padding: 16px 24px;
+  }
+  .dir-a .entries-label {
+    font-size: 12px; font-weight: 600; color: var(--stone);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+  }
+  .dir-a .entry-card {
+    background: var(--linen); border-radius: 12px; padding: 14px 16px;
+    margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .dir-a .entry-time { font-size: 13px; color: var(--stone); }
+  .dir-a .entry-values { text-align: right; }
+  .dir-a .entry-cal { font-size: 16px; font-weight: 500; }
+  .dir-a .entry-sug { font-size: 13px; color: var(--stone); }
+
+  .dir-a .insights-panel {
+    flex: 0 0 auto; background: var(--linen); border-top: 1px solid var(--sand);
+    padding: 16px 24px 32px;
+  }
+  .dir-a .insights-label {
+    font-size: 12px; font-weight: 600; color: var(--stone);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .dir-a .pill-row {
+    display: flex; gap: 6px; margin-bottom: 12px;
+  }
+  .dir-a .pill {
+    padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600;
+    background: transparent; color: var(--stone); border: 1px solid var(--sand);
+    cursor: pointer; font-family: inherit;
+  }
+  .dir-a .pill.active { background: var(--blush); color: var(--terra); border-color: var(--terra); }
+  .dir-a .insight-values {
+    display: flex; gap: 32px;
+  }
+  .dir-a .insight-item label { font-size: 11px; color: var(--tan); display: block; }
+  .dir-a .insight-item span { font-size: 20px; font-weight: 600; }
+
+  /* ========================================
+     DIRECTION B: Split Hero (Side-by-side)
+     ======================================== */
+  .dir-b .hero {
+    flex: 0 0 auto; padding: 20px 24px;
+    display: flex; gap: 16px; justify-content: center;
+  }
+  .dir-b .hero-card {
+    flex: 1; max-width: 160px; background: var(--linen); border-radius: 16px;
+    padding: 20px 16px; text-align: center; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .dir-b .hero-card:hover { background: var(--blush); }
+  .dir-b .hero-card-label {
+    font-size: 11px; font-weight: 600; color: var(--stone);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+  }
+  .dir-b .hero-card-value {
+    font-size: 40px; font-weight: 700; color: var(--espresso); line-height: 1.1;
+  }
+  .dir-b .hero-card-unit {
+    font-size: 14px; font-weight: 500; color: var(--stone); margin-top: 2px;
+  }
+  .dir-b .streak-row {
+    text-align: center; padding: 0 24px 12px;
+    font-size: 13px; font-weight: 500; color: var(--amber);
+  }
+  .dir-b .add-btn {
+    margin: 0 24px 16px; padding: 14px; border-radius: 9999px;
+    background: var(--terra); color: #fff; border: none;
+    font-size: 16px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: background 0.2s;
+    display: block; width: calc(100% - 48px);
+  }
+  .dir-b .add-btn:hover { background: var(--terra-deep); }
+  .dir-b .entries-area {
+    flex: 1; overflow-y: auto; padding: 0 24px 16px;
+  }
+  .dir-b .entry-card {
+    background: var(--linen); border-radius: 12px; padding: 14px 16px;
+    margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .dir-b .entry-time { font-size: 13px; color: var(--stone); }
+  .dir-b .entry-values { display: flex; gap: 16px; }
+  .dir-b .entry-val { font-size: 15px; font-weight: 500; }
+  .dir-b .entry-val .lbl { font-size: 11px; color: var(--stone); }
+
+  .dir-b .insights-panel {
+    flex: 0 0 auto; background: var(--linen); border-top: 1px solid var(--sand);
+    padding: 16px 24px 32px;
+  }
+  .dir-b .pill-row { display: flex; gap: 6px; margin-bottom: 12px; }
+  .dir-b .pill {
+    padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600;
+    background: transparent; color: var(--stone); border: 1px solid var(--sand);
+    cursor: pointer; font-family: inherit;
+  }
+  .dir-b .pill.active { background: var(--blush); color: var(--terra); border-color: var(--terra); }
+  .dir-b .insight-values { display: flex; gap: 32px; }
+  .dir-b .insight-item label { font-size: 11px; color: var(--tan); display: block; }
+  .dir-b .insight-item span { font-size: 20px; font-weight: 600; }
+
+  /* ========================================
+     DIRECTION C: Minimal with FAB
+     ======================================== */
+  .dir-c .hero {
+    flex: 0 0 auto; padding: 32px 24px 24px; text-align: center;
+  }
+  .dir-c .hero-date {
+    font-size: 13px; font-weight: 500; color: var(--stone); margin-bottom: 16px;
+  }
+  .dir-c .hero-total {
+    font-size: 56px; font-weight: 700; color: var(--espresso); line-height: 1.0;
+  }
+  .dir-c .hero-sugar {
+    font-size: 24px; font-weight: 500; color: var(--stone); margin-top: 4px;
+  }
+  .dir-c .streak-row {
+    margin-top: 16px; font-size: 13px; font-weight: 500; color: var(--amber);
+  }
+  .dir-c .entries-area {
+    flex: 1; overflow-y: auto; padding: 16px 24px;
+  }
+  .dir-c .entry-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--sand);
+  }
+  .dir-c .entry-row:last-child { border-bottom: none; }
+  .dir-c .entry-time { font-size: 13px; color: var(--tan); }
+  .dir-c .entry-vals { font-size: 16px; font-weight: 500; }
+  .dir-c .entry-sug { font-size: 13px; color: var(--stone); }
+
+  .dir-c .fab {
+    position: absolute; bottom: 140px; right: 24px;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--terra); color: #fff; border: none;
+    font-size: 28px; font-weight: 400; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(196,133,108,0.35);
+    transition: transform 0.2s, background 0.2s;
+    display: flex; align-items: center; justify-content: center;
+    font-family: inherit;
+  }
+  .dir-c .fab:hover { transform: scale(1.08); background: var(--terra-deep); }
+
+  .dir-c .insights-panel {
+    flex: 0 0 auto; background: var(--linen);
+    border-top: 1px solid var(--sand);
+    padding: 16px 24px 32px;
+  }
+  .dir-c .pill-row { display: flex; gap: 6px; margin-bottom: 12px; }
+  .dir-c .pill {
+    padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600;
+    background: transparent; color: var(--stone); border: 1px solid var(--sand);
+    cursor: pointer; font-family: inherit;
+  }
+  .dir-c .pill.active { background: var(--blush); color: var(--terra); border-color: var(--terra); }
+  .dir-c .insight-values { display: flex; gap: 32px; }
+  .dir-c .insight-item label { font-size: 11px; color: var(--tan); display: block; }
+  .dir-c .insight-item span { font-size: 20px; font-weight: 600; }
+
+  /* ========================================
+     DIRECTION D: Compact Dashboard
+     ======================================== */
+  .dir-d .top-bar {
+    padding: 8px 24px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .dir-d .top-streak { font-size: 13px; font-weight: 500; color: var(--amber); }
+  .dir-d .top-date { font-size: 13px; font-weight: 500; color: var(--stone); }
+  .dir-d .hero {
+    padding: 16px 24px; display: flex; gap: 12px;
+  }
+  .dir-d .stat-card {
+    flex: 1; background: var(--linen); border-radius: 12px;
+    padding: 16px; cursor: pointer; transition: background 0.2s;
+  }
+  .dir-d .stat-card:hover { background: var(--blush); }
+  .dir-d .stat-label {
+    font-size: 11px; font-weight: 600; color: var(--stone);
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .dir-d .stat-value {
+    font-size: 32px; font-weight: 700; color: var(--espresso); line-height: 1.2; margin-top: 4px;
+  }
+  .dir-d .stat-unit { font-size: 14px; font-weight: 500; color: var(--stone); }
+
+  .dir-d .insights-inline {
+    padding: 12px 24px;
+  }
+  .dir-d .pill-row { display: flex; gap: 6px; margin-bottom: 10px; }
+  .dir-d .pill {
+    padding: 5px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600;
+    background: transparent; color: var(--stone); border: 1px solid var(--sand);
+    cursor: pointer; font-family: inherit;
+  }
+  .dir-d .pill.active { background: var(--blush); color: var(--terra); border-color: var(--terra); }
+  .dir-d .avg-row {
+    display: flex; gap: 24px; font-size: 13px;
+  }
+  .dir-d .avg-row label { color: var(--tan); }
+  .dir-d .avg-row span { font-weight: 600; color: var(--espresso); }
+
+  .dir-d .divider { height: 1px; background: var(--sand); margin: 8px 24px; }
+
+  .dir-d .entries-area {
+    flex: 1; overflow-y: auto; padding: 12px 24px;
+  }
+  .dir-d .entries-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+  }
+  .dir-d .entries-title {
+    font-size: 12px; font-weight: 600; color: var(--stone);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .dir-d .add-small {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--terra); color: #fff; border: none;
+    font-size: 18px; cursor: pointer; font-family: inherit;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .dir-d .add-small:hover { background: var(--terra-deep); }
+  .dir-d .entry-card {
+    background: var(--linen); border-radius: 10px; padding: 12px 14px;
+    margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .dir-d .entry-time { font-size: 12px; color: var(--stone); }
+  .dir-d .entry-vals { display: flex; gap: 12px; font-size: 14px; font-weight: 500; }
+  .dir-d .entry-sug-val { color: var(--stone); }
+
+  .dir-d .bottom-add {
+    padding: 16px 24px 32px;
+  }
+  .dir-d .add-full-btn {
+    width: 100%; padding: 14px; border-radius: 9999px;
+    background: var(--terra); color: #fff; border: none;
+    font-size: 16px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: background 0.2s;
+  }
+  .dir-d .add-full-btn:hover { background: var(--terra-deep); }
+
+  /* ========================================
+     DIRECTION E: Bottom Sheet Preview
+     ======================================== */
+  .dir-e .hero {
+    flex: 0 0 auto; padding: 28px 24px 20px; text-align: center;
+  }
+  .dir-e .hero-total {
+    font-size: 48px; font-weight: 700; color: var(--espresso);
+    line-height: 1.1; cursor: pointer;
+  }
+  .dir-e .hero-total:hover { color: var(--terra); }
+  .dir-e .hero-unit { font-size: 18px; font-weight: 500; color: var(--stone); }
+  .dir-e .hero-sugar {
+    font-size: 26px; font-weight: 600; color: var(--stone); margin-top: 2px;
+  }
+  .dir-e .hero-streak {
+    margin-top: 10px; font-size: 13px; font-weight: 500; color: var(--amber);
+  }
+  .dir-e .entries-area {
+    flex: 1; overflow-y: auto; padding: 16px 24px;
+  }
+  .dir-e .entry-card {
+    background: var(--linen); border-radius: 12px; padding: 14px 16px;
+    margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .dir-e .entry-time { font-size: 13px; color: var(--stone); }
+  .dir-e .entry-values { text-align: right; }
+  .dir-e .entry-cal { font-size: 16px; font-weight: 500; }
+  .dir-e .entry-sug { font-size: 13px; color: var(--stone); }
+
+  /* Bottom sheet overlay */
+  .dir-e .sheet-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 340px;
+    background: var(--cream);
+    border-top-left-radius: 20px; border-top-right-radius: 20px;
+    box-shadow: 0 -4px 24px rgba(61,50,41,0.08);
+    padding: 12px 24px 32px;
+    display: flex; flex-direction: column;
+  }
+  .dir-e .sheet-handle {
+    width: 36px; height: 4px; background: var(--sand); border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+  .dir-e .sheet-search {
+    width: 100%; padding: 12px 16px; border-radius: 8px;
+    border: 1px solid var(--sand); background: var(--linen);
+    font-size: 14px; font-family: inherit; color: var(--espresso);
+    margin-bottom: 16px; outline: none;
+  }
+  .dir-e .sheet-search::placeholder { color: var(--tan); }
+  .dir-e .sheet-fields { display: flex; gap: 12px; margin-bottom: 16px; }
+  .dir-e .sheet-field {
+    flex: 1; display: flex; flex-direction: column;
+  }
+  .dir-e .sheet-field label {
+    font-size: 11px; font-weight: 600; color: var(--stone);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+  }
+  .dir-e .sheet-field input {
+    padding: 14px 16px; border-radius: 8px;
+    border: 1px solid var(--sand); background: var(--linen);
+    font-size: 20px; font-weight: 500; font-family: inherit;
+    color: var(--espresso); outline: none; text-align: center;
+  }
+  .dir-e .sheet-field input:focus { border-color: var(--terra); }
+  .dir-e .sheet-log-btn {
+    width: 100%; padding: 16px; border-radius: 9999px;
+    background: var(--terra); color: #fff; border: none;
+    font-size: 16px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: background 0.2s;
+    margin-top: auto;
+  }
+  .dir-e .sheet-log-btn:hover { background: var(--terra-deep); }
+
+  /* ========================================
+     DIRECTION F: Zero State (First Open)
+     ======================================== */
+  .dir-f .hero {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 24px;
+    text-align: center;
+  }
+  .dir-f .hero-total {
+    font-size: 56px; font-weight: 700; color: var(--espresso);
+    line-height: 1.0; cursor: pointer; transition: color 0.2s;
+  }
+  .dir-f .hero-total:hover { color: var(--terra); }
+  .dir-f .hero-sugar {
+    font-size: 28px; font-weight: 500; color: var(--stone); margin-top: 4px;
+  }
+  .dir-f .hero-hint {
+    font-size: 13px; color: var(--tan); margin-top: 24px;
+    line-height: 1.5;
+  }
+  .dir-f .add-btn {
+    margin-top: 24px; padding: 16px 48px; border-radius: 9999px;
+    background: var(--terra); color: #fff; border: none;
+    font-size: 16px; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: background 0.2s;
+  }
+  .dir-f .add-btn:hover { background: var(--terra-deep); }
+  .dir-f .insights-panel {
+    flex: 0 0 auto; background: var(--linen); border-top: 1px solid var(--sand);
+    padding: 16px 24px 32px; text-align: center;
+  }
+  .dir-f .insights-empty {
+    font-size: 13px; color: var(--tan); padding: 8px 0;
+  }
+
+  /* ========================================
+     Compare View
+     ======================================== */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(375px, 1fr));
+    gap: 32px;
+    justify-items: center;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .mockup-grid, .compare-grid {
+      grid-template-columns: 1fr;
+    }
+    .phone-frame { width: 100%; max-width: 375px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <h1>calorie-sugar-tracker UX</h1>
+  <div class="nav-pills">
+    <button class="nav-pill active" onclick="showSection('all')">All Directions</button>
+    <button class="nav-pill" onclick="showSection('a')">A: Centered Hero</button>
+    <button class="nav-pill" onclick="showSection('b')">B: Split Cards</button>
+    <button class="nav-pill" onclick="showSection('c')">C: Minimal + FAB</button>
+    <button class="nav-pill" onclick="showSection('d')">D: Compact Dashboard</button>
+    <button class="nav-pill" onclick="showSection('e')">E: Entry Sheet</button>
+    <button class="nav-pill" onclick="showSection('f')">F: Zero State</button>
+  </div>
+</nav>
+
+<!-- ALL DIRECTIONS -->
+<div class="mockups">
+
+  <!-- Section: All -->
+  <div class="mockup-section active" id="sec-all">
+    <div class="section-header">
+      <h2>All Design Directions</h2>
+      <p>Six variations applying the "Warm Quiet" palette, Plus Jakarta Sans typography, and the core interaction patterns. Click a tab above to see any direction in detail.</p>
+    </div>
+    <div class="compare-grid">
+      <!-- A -->
+      <div>
+        <div class="phone-frame">
+          <div class="app-screen dir-a" id="clone-a-all"></div>
+        </div>
+        <div class="phone-label">A: Centered Hero</div>
+        <div class="phone-sublabel">Total as dominant centred element. Tap to add. Classic single-focus layout.</div>
+      </div>
+      <!-- B -->
+      <div>
+        <div class="phone-frame">
+          <div class="app-screen dir-b" id="clone-b-all"></div>
+        </div>
+        <div class="phone-label">B: Split Cards</div>
+        <div class="phone-sublabel">Calories and sugar as two equal cards. Explicit add button. Both metrics equally prominent.</div>
+      </div>
+      <!-- C -->
+      <div>
+        <div class="phone-frame">
+          <div class="app-screen dir-c" id="clone-c-all"></div>
+        </div>
+        <div class="phone-label">C: Minimal + FAB</div>
+        <div class="phone-sublabel">Maximum whitespace. Floating action button. Line-separated entries. Ultra-minimal.</div>
+      </div>
+      <!-- D -->
+      <div>
+        <div class="phone-frame">
+          <div class="app-screen dir-d" id="clone-d-all"></div>
+        </div>
+        <div class="phone-label">D: Compact Dashboard</div>
+        <div class="phone-sublabel">All info above the fold. Insights inline. Dense but organised.</div>
+      </div>
+      <!-- E -->
+      <div>
+        <div class="phone-frame">
+          <div class="app-screen dir-e" id="clone-e-all"></div>
+        </div>
+        <div class="phone-label">E: Entry Sheet Open</div>
+        <div class="phone-sublabel">Shows the bottom sheet entry flow with smart search, input fields, and Log button.</div>
+      </div>
+      <!-- F -->
+      <div>
+        <div class="phone-frame">
+          <div class="app-screen dir-f" id="clone-f-all"></div>
+        </div>
+        <div class="phone-label">F: Zero State</div>
+        <div class="phone-sublabel">First-time user experience. Empty, inviting, self-evident.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Individual sections will be shown/hidden -->
+  <div class="mockup-section" id="sec-a">
+    <div class="section-header">
+      <h2>Direction A: Centered Hero</h2>
+      <p>The daily total dominates the screen as a single large centred number. Tapping it opens the entry sheet. History scrolls below. Insights at the bottom. The most focused, single-element layout.</p>
+    </div>
+    <div class="mockup-grid"><div><div class="phone-frame"><div class="app-screen dir-a" id="detail-a"></div></div></div></div>
+  </div>
+
+  <div class="mockup-section" id="sec-b">
+    <div class="section-header">
+      <h2>Direction B: Split Cards</h2>
+      <p>Calories and sugar get equal visual weight as two side-by-side cards. An explicit full-width "Add Entry" button below. Both metrics are first-class citizens from the very first glance.</p>
+    </div>
+    <div class="mockup-grid"><div><div class="phone-frame"><div class="app-screen dir-b" id="detail-b"></div></div></div></div>
+  </div>
+
+  <div class="mockup-section" id="sec-c">
+    <div class="section-header">
+      <h2>Direction C: Minimal + FAB</h2>
+      <p>Maximum whitespace and breathing room. Large hero number, line-separated entries instead of cards, and a floating action button (FAB) for entry. The most restrained layout.</p>
+    </div>
+    <div class="mockup-grid"><div><div class="phone-frame"><div class="app-screen dir-c" id="detail-c"></div></div></div></div>
+  </div>
+
+  <div class="mockup-section" id="sec-d">
+    <div class="section-header">
+      <h2>Direction D: Compact Dashboard</h2>
+      <p>Everything above the fold: stat cards, inline insights with pill selector, and a compact entry list. Most information-dense while still clean.</p>
+    </div>
+    <div class="mockup-grid"><div><div class="phone-frame"><div class="app-screen dir-d" id="detail-d"></div></div></div></div>
+  </div>
+
+  <div class="mockup-section" id="sec-e">
+    <div class="section-header">
+      <h2>Direction E: Entry Sheet (Open State)</h2>
+      <p>Shows the bottom sheet entry flow: smart search field, calorie and sugar inputs, and a full-width Log button. This is the core interaction moment.</p>
+    </div>
+    <div class="mockup-grid"><div><div class="phone-frame"><div class="app-screen dir-e" id="detail-e"></div></div></div></div>
+  </div>
+
+  <div class="mockup-section" id="sec-f">
+    <div class="section-header">
+      <h2>Direction F: Zero State (First Open)</h2>
+      <p>What the brand-new user sees: zeroes, a clear add button, empty insights. The interface must be self-evident without instruction.</p>
+    </div>
+    <div class="mockup-grid"><div><div class="phone-frame"><div class="app-screen dir-f" id="detail-f"></div></div></div></div>
+  </div>
+
+</div>
+
+<script>
+// --- Template HTML for each direction ---
+const templates = {
+  a: `
+    <div class="status-bar"><span>9:41</span><span>100%</span></div>
+    <div class="hero">
+      <div class="hero-label">Today</div>
+      <div class="hero-total">1,420 <span class="unit">kcal</span></div>
+      <div class="hero-sugar">38 <span class="unit">g sugar</span></div>
+      <div class="hero-hint">tap total to add entry</div>
+      <div class="streak-badge">5 day streak</div>
+    </div>
+    <div class="section-divider"></div>
+    <div class="entries-area">
+      <div class="entries-label">Entries</div>
+      <div class="entry-card"><div class="entry-time">12:34 PM</div><div class="entry-values"><div class="entry-cal">620 kcal</div><div class="entry-sug">14g sugar</div></div></div>
+      <div class="entry-card"><div class="entry-time">8:15 AM</div><div class="entry-values"><div class="entry-cal">450 kcal</div><div class="entry-sug">18g sugar</div></div></div>
+      <div class="entry-card"><div class="entry-time">7:02 AM</div><div class="entry-values"><div class="entry-cal">350 kcal</div><div class="entry-sug">6g sugar</div></div></div>
+    </div>
+    <div class="insights-panel">
+      <div class="insights-label">Insights</div>
+      <div class="pill-row">
+        <button class="pill">1d</button><button class="pill active">3d</button><button class="pill">7d</button><button class="pill">30d</button><button class="pill">90d</button>
+      </div>
+      <div class="insight-values">
+        <div class="insight-item"><label>Avg calories</label><span>1,580</span></div>
+        <div class="insight-item"><label>Avg sugar</label><span>42g</span></div>
+      </div>
+    </div>
+  `,
+  b: `
+    <div class="status-bar"><span>9:41</span><span>100%</span></div>
+    <div class="hero">
+      <div class="hero-card">
+        <div class="hero-card-label">Calories</div>
+        <div class="hero-card-value">1,420</div>
+        <div class="hero-card-unit">kcal</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-label">Sugar</div>
+        <div class="hero-card-value">38</div>
+        <div class="hero-card-unit">grams</div>
+      </div>
+    </div>
+    <div class="streak-row">5 day streak</div>
+    <button class="add-btn">+ Add Entry</button>
+    <div class="entries-area">
+      <div class="entry-card"><div class="entry-time">12:34 PM</div><div class="entry-values"><div class="entry-val">620 <span class="lbl">kcal</span></div><div class="entry-val">14 <span class="lbl">g</span></div></div></div>
+      <div class="entry-card"><div class="entry-time">8:15 AM</div><div class="entry-values"><div class="entry-val">450 <span class="lbl">kcal</span></div><div class="entry-val">18 <span class="lbl">g</span></div></div></div>
+      <div class="entry-card"><div class="entry-time">7:02 AM</div><div class="entry-values"><div class="entry-val">350 <span class="lbl">kcal</span></div><div class="entry-val">6 <span class="lbl">g</span></div></div></div>
+    </div>
+    <div class="insights-panel">
+      <div class="pill-row">
+        <button class="pill">1d</button><button class="pill active">3d</button><button class="pill">7d</button><button class="pill">30d</button><button class="pill">90d</button>
+      </div>
+      <div class="insight-values">
+        <div class="insight-item"><label>Avg calories</label><span>1,580</span></div>
+        <div class="insight-item"><label>Avg sugar</label><span>42g</span></div>
+      </div>
+    </div>
+  `,
+  c: `
+    <div class="status-bar"><span>9:41</span><span>100%</span></div>
+    <div class="hero">
+      <div class="hero-date">Thursday, March 6</div>
+      <div class="hero-total">1,420</div>
+      <div class="hero-sugar">38g sugar</div>
+      <div class="streak-row">5 day streak</div>
+    </div>
+    <div class="entries-area">
+      <div class="entry-row"><div class="entry-time">12:34 PM</div><div><div class="entry-vals">620 kcal</div><div class="entry-sug">14g sugar</div></div></div>
+      <div class="entry-row"><div class="entry-time">8:15 AM</div><div><div class="entry-vals">450 kcal</div><div class="entry-sug">18g sugar</div></div></div>
+      <div class="entry-row"><div class="entry-time">7:02 AM</div><div><div class="entry-vals">350 kcal</div><div class="entry-sug">6g sugar</div></div></div>
+    </div>
+    <button class="fab">+</button>
+    <div class="insights-panel">
+      <div class="pill-row">
+        <button class="pill">1d</button><button class="pill active">3d</button><button class="pill">7d</button><button class="pill">30d</button><button class="pill">90d</button>
+      </div>
+      <div class="insight-values">
+        <div class="insight-item"><label>Avg calories</label><span>1,580</span></div>
+        <div class="insight-item"><label>Avg sugar</label><span>42g</span></div>
+      </div>
+    </div>
+  `,
+  d: `
+    <div class="status-bar"><span>9:41</span><span>100%</span></div>
+    <div class="top-bar"><div class="top-date">Thu, Mar 6</div><div class="top-streak">5 day streak</div></div>
+    <div class="hero">
+      <div class="stat-card"><div class="stat-label">Calories</div><div class="stat-value">1,420</div><div class="stat-unit">kcal today</div></div>
+      <div class="stat-card"><div class="stat-label">Sugar</div><div class="stat-value">38</div><div class="stat-unit">g today</div></div>
+    </div>
+    <div class="insights-inline">
+      <div class="pill-row">
+        <button class="pill">1d</button><button class="pill active">3d</button><button class="pill">7d</button><button class="pill">30d</button><button class="pill">90d</button>
+      </div>
+      <div class="avg-row"><div><label>Avg cal </label><span>1,580</span></div><div><label>Avg sugar </label><span>42g</span></div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="entries-area">
+      <div class="entries-header"><div class="entries-title">Today's entries</div><button class="add-small">+</button></div>
+      <div class="entry-card"><div class="entry-time">12:34 PM</div><div class="entry-vals"><span>620 kcal</span><span class="entry-sug-val">14g</span></div></div>
+      <div class="entry-card"><div class="entry-time">8:15 AM</div><div class="entry-vals"><span>450 kcal</span><span class="entry-sug-val">18g</span></div></div>
+      <div class="entry-card"><div class="entry-time">7:02 AM</div><div class="entry-vals"><span>350 kcal</span><span class="entry-sug-val">6g</span></div></div>
+    </div>
+    <div class="bottom-add"><button class="add-full-btn">+ Add Entry</button></div>
+  `,
+  e: `
+    <div class="status-bar"><span>9:41</span><span>100%</span></div>
+    <div class="hero">
+      <div class="hero-total">1,420 <span class="hero-unit">kcal</span></div>
+      <div class="hero-sugar">38g sugar</div>
+      <div class="hero-streak">5 day streak</div>
+    </div>
+    <div class="entries-area">
+      <div class="entry-card"><div class="entry-time">8:15 AM</div><div class="entry-values"><div class="entry-cal">450 kcal</div><div class="entry-sug">18g sugar</div></div></div>
+      <div class="entry-card"><div class="entry-time">7:02 AM</div><div class="entry-values"><div class="entry-cal">350 kcal</div><div class="entry-sug">6g sugar</div></div></div>
+    </div>
+    <div class="sheet-overlay">
+      <div class="sheet-handle"></div>
+      <input class="sheet-search" type="text" placeholder="Search food (e.g. chicken rice)">
+      <div class="sheet-fields">
+        <div class="sheet-field"><label>Calories</label><input type="text" value="620" inputmode="numeric"></div>
+        <div class="sheet-field"><label>Sugar (g)</label><input type="text" value="14" inputmode="numeric"></div>
+      </div>
+      <button class="sheet-log-btn">Log</button>
+    </div>
+  `,
+  f: `
+    <div class="status-bar"><span>9:41</span><span>100%</span></div>
+    <div class="hero">
+      <div class="hero-total" style="color: var(--tan)">0 <span style="font-size:20px; font-weight:500">kcal</span></div>
+      <div class="hero-sugar" style="color: var(--tan)">0g sugar</div>
+      <div class="hero-hint">Log your first meal to get started</div>
+      <button class="add-btn">+ Add Entry</button>
+    </div>
+    <div class="insights-panel">
+      <div class="insights-empty">Insights will appear after your first entry</div>
+    </div>
+  `
+};
+
+// Populate all mockups
+function populate() {
+  for (const [key, html] of Object.entries(templates)) {
+    const allEl = document.getElementById('clone-' + key + '-all');
+    const detailEl = document.getElementById('detail-' + key);
+    if (allEl) allEl.innerHTML = html;
+    if (detailEl) detailEl.innerHTML = html;
+  }
+}
+
+function showSection(id) {
+  document.querySelectorAll('.mockup-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+
+  const target = document.getElementById('sec-' + id);
+  if (target) target.classList.add('active');
+
+  event.target.classList.add('active');
+}
+
+populate();
+</script>
+</body>
+</html>

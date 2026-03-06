@@ -15,6 +15,7 @@ npm run dev
 
 - `npm run dev` -- Start development server
 - `npm run build` -- Production build
+- `npm run preview` -- Preview production build locally
 - `npm test` -- Run tests
 - `npm run lint` -- Run ESLint
 
