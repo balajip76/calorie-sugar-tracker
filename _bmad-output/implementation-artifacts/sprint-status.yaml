@@ -48,8 +48,8 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: Core Entry & Daily Total
-  epic-2: backlog
-  2-1-storage-service-data-model: backlog
+  epic-2: in-progress
+  2-1-storage-service-data-model: done
   2-2-entries-context-calculations-engine: backlog
   2-3-main-screen-layout-statcards-date-row: backlog
   2-4-entry-sheet-logging-flow: backlog
