@@ -41,10 +41,10 @@ story_location: _bmad-output/implementation-artifacts
 
 development_status:
   # Epic 1: Project Foundation & First Deployable App
-  epic-1: in-progress
+  epic-1: done
   1-1-project-scaffolding-toolchain-setup: done
   1-2-design-system-tokens-base-layout: done
-  1-3-github-repository-vercel-deployment: review
+  1-3-github-repository-vercel-deployment: done
   epic-1-retrospective: optional
 
   # Epic 2: Core Entry & Daily Total

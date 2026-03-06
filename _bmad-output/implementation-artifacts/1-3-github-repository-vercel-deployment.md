@@ -1,6 +1,6 @@
 # Story 1.3: GitHub Repository & Vercel Deployment
 
-Status: review
+Status: done
 
 ## Story
 
@@ -63,7 +63,7 @@ This story is predominantly a DevOps/configuration story with two manual steps (
 
 ### Task 1: vercel.json Structure -- CRITICAL
 
-**Why ****`vercel.json`**** is needed:** Vite builds a single-page app. Without the rewrite rule, directly accessing any URL other than `/` (e.g. refreshing on a deep link) returns a 404. The rewrite rule sends all requests to `index.html` so React handles routing client-side (this app has no routing, but it's still required for refresh to work).
+**Why \****`vercel.json`**\*\* is needed:** Vite builds a single-page app. Without the rewrite rule, directly accessing any URL other than `/` (e.g. refreshing on a deep link) returns a 404. The rewrite rule sends all requests to `index.html` so React handles routing client-side (this app has no routing, but it's still required for refresh to work).
 
 **CSP Header Considerations:**
 - `script-src 'self'`: All JavaScript is bundled by Vite into a single JS file served from the same origin. No external scripts.
@@ -72,7 +72,7 @@ This story is predominantly a DevOps/configuration story with two manual steps (
 - `connect-src 'self'`: No API calls. `window.open()` for Google search is navigation, not a network request.
 - `img-src 'self' data:`: No external images needed.
 
-**Complete ****`vercel.json`****:**
+**Complete \****`vercel.json`**\*\*:**
 ```json
 {
   "rewrites": [
@@ -128,9 +128,9 @@ The project root is not yet a git repository (the `_bmad/` and `_bmad-output/` d
 - **Vite scaffold in non-empty directory** — Handled in Story 1.1 via temp-scaffold approach (not relevant here)
 - **TypeScript vitest config** — Requires `/// <reference types="vitest/config" />` in vite.config.ts (already in place)
 - **Tailwind v4 spacing utility names** — Use `p-md`, `p-xs`, `gap-sm` etc. NOT `p-spacing-md` (see Story 1.2 review correction)
-- **Google Fonts must come before ****`@import "tailwindcss"`** — Already implemented correctly in index.css
-- **Body needs ****`min-height: 100dvh`** — Already fixed in Story 1.2 code review
-- **No ****`tailwind.config.js`** — Tailwind v4 uses @theme in index.css only
+- **Google Fonts must come before \****`@import "tailwindcss"`** — Already implemented correctly in index.css
+- **Body needs \****`min-height: 100dvh`** — Already fixed in Story 1.2 code review
+- **No \****`tailwind.config.js`** — Tailwind v4 uses @theme in index.css only
 - **Vercel CLI is authenticated** — `vercel --yes --prod` deploys fully automated, no dashboard required
 - **gh CLI is authenticated as balajip76** — `gh repo create` works without manual browser steps
 
@@ -212,12 +212,32 @@ Claude Sonnet 4.6
 - All 8 acceptance criteria satisfied
 - FR25 (auto-deploy via GitHub) and FR26 (shareable URL) fully implemented
 
+### Senior Developer Review
+
+**Reviewer:** Claude Sonnet 4.6 (adversarial review)
+**Date:** 2026-03-06
+**Findings:** 0 High, 3 Medium, 4 Low — all fixed automatically
+
+#### Issues Fixed
+
+- **M1 — BMAD directories not committed**: `_bmad/`, `_bmad-output/`, `docs/` were untracked despite story Dev Notes stating they should be in version control. Fixed: staged and committed all 673 files in a new commit `chore: add BMAD planning artifacts and tighten security headers`.
+- **M2 — ****`.claude/`**** not gitignored**: Claude Code IDE directory showing as untracked with no `.gitignore` entry. Fixed: added `.claude` to `.gitignore` under IDE/AI tooling section.
+- **M3 — Missing ****`Permissions-Policy`**** header**: Modern security header absent from `vercel.json`. Fixed: added `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()`.
+- **L2 — Missing HSTS header**: `Strict-Transport-Security` absent. Fixed: added `max-age=31536000; includeSubDomains`.
+- **L3 — README missing ****`npm run preview`**: Added `npm run preview -- Preview production build locally` to README scripts section.
+
+#### Issues Noted (No Fix Required)
+
+- **L1 — ****`X-Frame-Options`**** redundant with CSP ****`frame-ancestors 'none'`**: Belt-and-suspenders for pre-CSP browsers; acceptable to keep both.
+- **L4 — Tailwind scanning non-source files**: Pre-existing from Story 1.2; out of scope here. Tailwind v4 Vite plugin auto-detects `_bmad-output/` markdown producing a `[file:line]` CSS class warning at build time. Low impact (3.5 kB gzip CSS).
+
 ### Change Log
 
 - 2026-03-06: Implemented Story 1.3 — GitHub repo created, Vercel deployed, auto-deploy pipeline verified
+- 2026-03-06: Code review fixes — committed BMAD dirs, added `.claude` to gitignore, added Permissions-Policy + HSTS headers, README preview script
 
 ### File List
 
-- vercel.json (new — SPA rewrite + CSP headers)
-- README.md (modified — added live Vercel URL)
-- .gitignore (modified — .vercel/ added by Vercel CLI)
+- vercel.json (new — SPA rewrite + CSP + Permissions-Policy + HSTS headers)
+- README.md (modified — added live Vercel URL + preview script)
+- .gitignore (modified — .vercel/ by Vercel CLI, .claude/ by code review)
