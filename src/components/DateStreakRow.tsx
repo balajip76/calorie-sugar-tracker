@@ -1,4 +1,8 @@
-export function DateStreakRow() {
+interface DateStreakRowProps {
+  streak: number;
+}
+
+export function DateStreakRow({ streak }: DateStreakRowProps) {
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, '0');
   const dateTimeAttr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
@@ -13,7 +17,7 @@ export function DateStreakRow() {
       <time dateTime={dateTimeAttr} className="font-sans text-section-label font-medium text-espresso">
         {displayDate}
       </time>
-      {/* Streak counter will be added in Story 3.1 */}
+      <span className="text-streak font-medium text-warm-amber">🔥{streak}</span>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { StatCard } from './StatCard';
 
 function renderCard(overrides: Partial<{
@@ -88,5 +88,48 @@ describe('StatCard', () => {
     const { onClick } = renderCard();
     fireEvent.keyDown(screen.getByRole('button'), { key: 'Tab' });
     expect(onClick).not.toHaveBeenCalled();
+  });
+});
+
+describe('count-up animation', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it('animates to final value after value change', () => {
+    // Mock rAF to fire immediately with a far-future timestamp so progress = 1
+    vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => {
+      cb(performance.now() + 1000);
+      return 0;
+    });
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+
+    const { rerender } = render(
+      <StatCard label="Calories" value={0} unit="kcal" onClick={vi.fn()} ariaLabel="test" />
+    );
+    expect(screen.getByText('0')).toBeInTheDocument();
+
+    rerender(
+      <StatCard label="Calories" value={500} unit="kcal" onClick={vi.fn()} ariaLabel="test" />
+    );
+    expect(screen.getByText('500')).toBeInTheDocument();
+  });
+
+  it('updates instantly when prefers-reduced-motion is active', () => {
+    const mockRaf = vi.fn();
+    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: true }));
+    vi.stubGlobal('requestAnimationFrame', mockRaf);
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+
+    const { rerender } = render(
+      <StatCard label="Calories" value={0} unit="kcal" onClick={vi.fn()} ariaLabel="test" />
+    );
+    rerender(
+      <StatCard label="Calories" value={500} unit="kcal" onClick={vi.fn()} ariaLabel="test" />
+    );
+
+    expect(mockRaf).not.toHaveBeenCalled();
+    expect(screen.getByText('500')).toBeInTheDocument();
   });
 });

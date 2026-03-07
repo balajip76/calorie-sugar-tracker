@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 
 interface StatCardProps {
@@ -9,6 +10,41 @@ interface StatCardProps {
 }
 
 export function StatCard({ label, value, unit, onClick, ariaLabel }: StatCardProps) {
+  const [displayValue, setDisplayValue] = useState(value);
+  const prevValueRef = useRef(value);
+
+  useEffect(() => {
+    const from = prevValueRef.current;
+    const to = value;
+    prevValueRef.current = to;
+
+    if (from === to) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDisplayValue(to);
+      return;
+    }
+
+    const duration = 300;
+    const start = performance.now();
+    let rafId: number;
+
+    const animate = (timestamp: number) => {
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplayValue(Math.round(from + (to - from) * eased));
+      if (progress < 1) {
+        rafId = requestAnimationFrame(animate);
+      } else {
+        setDisplayValue(to);
+      }
+    };
+
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
+  }, [value]);
+
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -31,7 +67,7 @@ export function StatCard({ label, value, unit, onClick, ariaLabel }: StatCardPro
         {label}
       </span>
       <span className={`text-[2.25rem] font-bold leading-none ${valueColour}`}>
-        {value}
+        {displayValue}
       </span>
       <span className="text-section-label text-warm-stone">
         {unit}

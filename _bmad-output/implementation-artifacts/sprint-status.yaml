@@ -52,18 +52,18 @@ development_status:
   2-1-storage-service-data-model: done
   2-2-entries-context-calculations-engine: done
   2-3-main-screen-layout-statcards-date-row: done
-  2-4-entry-sheet-logging-flow: backlog
-  2-5-entry-history-list: backlog
-  2-6-fab-error-handling: backlog
+  2-4-entry-sheet-logging-flow: done
+  2-5-entry-history-list: done
+  2-6-fab-error-handling: done
   epic-2-retrospective: optional
 
   # Epic 3: Insights & Streaks
-  epic-3: backlog
-  3-1-streak-calculation-display: backlog
-  3-2-insights-panel-with-pill-selector: backlog
+  epic-3: in-progress
+  3-1-streak-calculation-display: done
+  3-2-insights-panel-with-pill-selector: done
   epic-3-retrospective: optional
 
   # Epic 4: Smart Search
-  epic-4: backlog
-  4-1-inline-smart-search-in-entry-flow: backlog
+  epic-4: in-progress
+  4-1-inline-smart-search-in-entry-flow: ready-for-dev
   epic-4-retrospective: optional
