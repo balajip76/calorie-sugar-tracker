@@ -48,7 +48,7 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: Core Entry & Daily Total
-  epic-2: in-progress
+  epic-2: done
   2-1-storage-service-data-model: done
   2-2-entries-context-calculations-engine: done
   2-3-main-screen-layout-statcards-date-row: done
@@ -58,12 +58,12 @@ development_status:
   epic-2-retrospective: optional
 
   # Epic 3: Insights & Streaks
-  epic-3: in-progress
+  epic-3: done
   3-1-streak-calculation-display: done
   3-2-insights-panel-with-pill-selector: done
   epic-3-retrospective: optional
 
   # Epic 4: Smart Search
-  epic-4: in-progress
-  4-1-inline-smart-search-in-entry-flow: ready-for-dev
+  epic-4: done
+  4-1-inline-smart-search-in-entry-flow: done
   epic-4-retrospective: optional

@@ -9,6 +9,7 @@ interface EntrySheetProps {
 
 export function EntrySheet({ isOpen, onClose, lastFocusedRef }: EntrySheetProps) {
   const { addEntry } = useEntries();
+  const [searchQuery, setSearchQuery] = useState('');
   const [calories, setCalories] = useState('');
   const [sugar, setSugar] = useState('');
   const [isClosing, setIsClosing] = useState(false);
@@ -18,6 +19,7 @@ export function EntrySheet({ isOpen, onClose, lastFocusedRef }: EntrySheetProps)
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
   const sheetPanelRef = useRef<HTMLDivElement>(null);
+  const smartSearchRef = useRef<HTMLInputElement>(null);
   const caloriesRef = useRef<HTMLInputElement>(null);
   const sugarRef = useRef<HTMLInputElement>(null);
   const logButtonRef = useRef<HTMLButtonElement>(null);
@@ -28,6 +30,8 @@ export function EntrySheet({ isOpen, onClose, lastFocusedRef }: EntrySheetProps)
       isClosingRef.current = false;
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsClosing(false);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSearchQuery('');
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setCalories('');
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -58,6 +62,7 @@ export function EntrySheet({ isOpen, onClose, lastFocusedRef }: EntrySheetProps)
       }
       if (e.key === 'Tab') {
         const focusable = [
+          smartSearchRef.current,
           caloriesRef.current,
           sugarRef.current,
           logButtonRef.current,
@@ -104,6 +109,13 @@ export function EntrySheet({ isOpen, onClose, lastFocusedRef }: EntrySheetProps)
     setIsClosing(true);
   };
 
+  const handleSearch = () => {
+    const query = searchQuery.trim();
+    if (!query) return;
+    const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   const handleLog = () => {
     addEntry(Number(calories) || 0, Number(sugar) || 0);
     handleClose();
@@ -133,6 +145,47 @@ export function EntrySheet({ isOpen, onClose, lastFocusedRef }: EntrySheetProps)
       >
         {/* Handle bar */}
         <div className="w-10 h-1 bg-sand-mist rounded-pill mx-auto -mt-2 mb-2" aria-hidden="true" />
+
+        {/* Smart search field */}
+        <div className="flex flex-col gap-1">
+          <label htmlFor="entry-search" className="text-section-label font-semibold text-warm-stone">
+            Search food
+          </label>
+          <div className="relative">
+            <input
+              ref={smartSearchRef}
+              id="entry-search"
+              type="text"
+              placeholder="Search food (e.g. chicken rice)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSearch(); } }}
+              className="w-full bg-warm-linen border border-sand-mist rounded-sm px-4 py-3 pr-12 text-input-field font-medium text-espresso placeholder:text-dusty-tan focus:outline-none focus:border-soft-terracotta transition-colors"
+            />
+            <button
+              type="button"
+              aria-label="Search Google"
+              onClick={handleSearch}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-warm-stone hover:text-soft-terracotta transition-colors p-1"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
+          </div>
+        </div>
 
         {/* Calories input */}
         <div className="flex flex-col gap-1">

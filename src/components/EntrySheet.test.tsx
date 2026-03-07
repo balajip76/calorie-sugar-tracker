@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { EntrySheet } from './EntrySheet';
 import { EntriesProvider } from '../context/EntriesContext';
 import * as storageService from '../services/storageService';
@@ -129,19 +129,141 @@ describe('EntrySheet', () => {
     expect(storageService.saveEntries).not.toHaveBeenCalled();
   });
 
-  it('Tab from Log button wraps focus back to Calories input', () => {
+  it('Tab from Log button wraps focus to Smart Search input', () => {
     renderSheet();
     const logButton = screen.getByRole('button', { name: /log/i });
     logButton.focus();
     fireEvent.keyDown(document, { key: 'Tab', shiftKey: false });
-    expect(document.activeElement).toBe(screen.getByPlaceholderText('e.g. 450'));
+    expect(document.activeElement).toBe(screen.getByPlaceholderText('Search food (e.g. chicken rice)'));
   });
 
-  it('Shift+Tab from Calories input wraps focus to Log button', () => {
+  it('Shift+Tab from Smart Search input wraps focus to Log button', () => {
     renderSheet();
-    const caloriesInput = screen.getByPlaceholderText('e.g. 450');
-    caloriesInput.focus();
+    const searchInput = screen.getByPlaceholderText('Search food (e.g. chicken rice)');
+    searchInput.focus();
     fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
     expect(document.activeElement).toBe(screen.getByRole('button', { name: /log/i }));
+  });
+
+  it('renders smart search field with correct placeholder', () => {
+    renderSheet();
+    expect(screen.getByPlaceholderText('Search food (e.g. chicken rice)')).toBeInTheDocument();
+  });
+
+  it('smart search field has an accessible label', () => {
+    renderSheet();
+    expect(screen.getByLabelText(/search food/i)).toBeInTheDocument();
+  });
+
+  it('pressing Enter in smart search opens Google with URL-encoded query', () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    renderSheet();
+    const searchInput = screen.getByPlaceholderText('Search food (e.g. chicken rice)');
+    fireEvent.change(searchInput, { target: { value: 'chicken rice' } });
+    fireEvent.keyDown(searchInput, { key: 'Enter' });
+    expect(openSpy).toHaveBeenCalledWith(
+      `https://www.google.com/search?q=${encodeURIComponent('chicken rice')}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    openSpy.mockRestore();
+  });
+
+  it('clicking search icon button opens Google with URL-encoded query', () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    renderSheet();
+    const searchInput = screen.getByPlaceholderText('Search food (e.g. chicken rice)');
+    fireEvent.change(searchInput, { target: { value: 'banana' } });
+    fireEvent.click(screen.getByRole('button', { name: /search google/i }));
+    expect(openSpy).toHaveBeenCalledWith(
+      `https://www.google.com/search?q=${encodeURIComponent('banana')}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    openSpy.mockRestore();
+  });
+
+  it('smart search with empty field does not open new tab', () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    renderSheet();
+    const searchInput = screen.getByPlaceholderText('Search food (e.g. chicken rice)');
+    fireEvent.keyDown(searchInput, { key: 'Enter' });
+    expect(openSpy).not.toHaveBeenCalled();
+    openSpy.mockRestore();
+  });
+
+  it('smart search with whitespace-only query does not open new tab', () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    renderSheet();
+    const searchInput = screen.getByPlaceholderText('Search food (e.g. chicken rice)');
+    fireEvent.change(searchInput, { target: { value: '   ' } });
+    fireEvent.keyDown(searchInput, { key: 'Enter' });
+    expect(openSpy).not.toHaveBeenCalled();
+    openSpy.mockRestore();
+  });
+
+  it('smart search field value is preserved while user fills in calories and sugar', () => {
+    renderSheet();
+    const searchInput = screen.getByPlaceholderText('Search food (e.g. chicken rice)');
+    fireEvent.change(searchInput, { target: { value: 'salmon fillet' } });
+    fireEvent.change(screen.getByPlaceholderText('e.g. 450'), { target: { value: '350' } });
+    fireEvent.change(screen.getByPlaceholderText('e.g. 12'), { target: { value: '0' } });
+    expect(searchInput).toHaveValue('salmon fillet');
+  });
+
+  it('logging an entry works correctly regardless of smart search field content', () => {
+    renderSheet();
+    fireEvent.change(screen.getByPlaceholderText('Search food (e.g. chicken rice)'), {
+      target: { value: 'pizza slice' },
+    });
+    fireEvent.change(screen.getByPlaceholderText('e.g. 450'), { target: { value: '600' } });
+    fireEvent.change(screen.getByPlaceholderText('e.g. 12'), { target: { value: '8' } });
+    fireEvent.click(screen.getByRole('button', { name: /log/i }));
+    expect(storageService.saveEntries).toHaveBeenCalledTimes(1);
+    const saved = vi.mocked(storageService.saveEntries).mock.calls[0][0];
+    expect(saved[0].calories).toBe(600);
+    expect(saved[0].sugar).toBe(8);
+  });
+
+  it('smart search field resets to empty when sheet reopens', () => {
+    function ToggleWrapper() {
+      const [open, setOpen] = useState(true);
+      const lastFocusedRef = useRef<HTMLElement | null>(null);
+      return (
+        <EntriesProvider>
+          <button onClick={() => setOpen((o) => !o)}>Toggle</button>
+          <EntrySheet isOpen={open} onClose={() => setOpen(false)} lastFocusedRef={lastFocusedRef} />
+        </EntriesProvider>
+      );
+    }
+    render(<ToggleWrapper />);
+
+    // Type into search field
+    const searchInput = screen.getByPlaceholderText('Search food (e.g. chicken rice)');
+    fireEvent.change(searchInput, { target: { value: 'pizza' } });
+    expect(searchInput).toHaveValue('pizza');
+
+    // Close the sheet via Escape + animationend
+    fireEvent.keyDown(document, { key: 'Escape' });
+    fireEvent(screen.getByTestId('sheet-panel'), new Event('animationend', { bubbles: true }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    // Reopen the sheet
+    fireEvent.click(screen.getByRole('button', { name: /toggle/i }));
+    expect(screen.getByPlaceholderText('Search food (e.g. chicken rice)')).toHaveValue('');
+  });
+
+  it('search URL-encodes special characters correctly', () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    renderSheet();
+    const searchInput = screen.getByPlaceholderText('Search food (e.g. chicken rice)');
+    fireEvent.change(searchInput, { target: { value: 'café & croissant #1' } });
+    fireEvent.keyDown(searchInput, { key: 'Enter' });
+    expect(openSpy).toHaveBeenCalledWith(
+      `https://www.google.com/search?q=${encodeURIComponent('café & croissant #1')}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    openSpy.mockRestore();
   });
 });
