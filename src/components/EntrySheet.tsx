@@ -66,19 +66,19 @@ export function EntrySheet({ isOpen, onClose, lastFocusedRef }: EntrySheetProps)
           caloriesRef.current,
           sugarRef.current,
           logButtonRef.current,
-        ].filter((el): el is HTMLElement => el !== null);
+        ].filter((el): el is HTMLInputElement | HTMLButtonElement => el !== null);
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
 
         if (e.shiftKey) {
           if (document.activeElement === first) {
             e.preventDefault();
-            last.focus();
+            last?.focus();
           }
         } else {
           if (document.activeElement === last) {
             e.preventDefault();
-            first.focus();
+            first?.focus();
           }
         }
       }
