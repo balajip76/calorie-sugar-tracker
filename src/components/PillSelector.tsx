@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import type { KeyboardEvent } from 'react';
 import type { InsightPeriod } from '../types';
 
 const PERIODS: InsightPeriod[] = [1, 3, 7, 30, 90];
@@ -12,7 +13,7 @@ interface PillSelectorProps {
 export function PillSelector({ selected, onChange }: PillSelectorProps) {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>, index: number) => {
     let targetIndex: number | null = null;
     if (e.key === 'ArrowRight') {
       targetIndex = (index + 1) % PERIODS.length;
